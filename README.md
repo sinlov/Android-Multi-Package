@@ -19,3 +19,25 @@ go build -o main main.go
 # test pakcage
 ./main -c test_Channel -r app-debug.apk -o out.apk
 ```
+
+you can download apk-to test
+
+https://github.com/sinlov/Android-Mulit-Package/raw/master/app-debug.apk
+
+# Principle
+
+apk will not check `META-INF` at package
+
+you can new file at path `./META-INF`
+
+like `pl_channel_` + `channel_name`
+
+> Inner file format is properties!
+
+Android API will read this file
+
+default properties is
+
+|key|value|
+|---|-----|
+|channel|channel_name|
