@@ -19,6 +19,7 @@ const (
 
 var ExcPathIsNotApk = errors.New("you input path is not apk, please check!")
 var ExcPathIsFolder = errors.New("you input path is folder, please check!")
+var ExcOutPathIsExist = errors.New("you out path is exist, stop program, please check!")
 
 type filterCLI struct {
 	cli.Helper
@@ -39,6 +40,11 @@ func verbosePrint(format string, a ...interface{}) {
 
 func isFilePathApk(apkPath string) (bool, error) {
 	return regexp.MatchString(`(\.apk$)`, apkPath)
+}
+
+func FileExist(filePath string) bool {
+	_, err := os.Stat(filePath)
+	return err == nil || os.IsExist(err)
 }
 
 func main() {
@@ -69,6 +75,7 @@ func main() {
 				ctx.String("Error %v, sys %v\n", ExcPathIsNotApk, err)
 				os.Exit(1)
 			}
+
 			err = insertApkChannelInfo(channelName, resource, outPutPath)
 			if err != nil {
 				fmt.Printf("insert error %v\n", err)
@@ -100,6 +107,9 @@ func insertApkChannelInfo(channel string, resource string, outPath string) error
 		return ExcPathIsNotApk
 	}
 	defer reader.Close()
+	if FileExist(outPath) {
+		return ExcOutPathIsExist
+	}
 	outFile, err := os.Create(outPath)
 	if err != nil {
 		return err
