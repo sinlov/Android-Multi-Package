@@ -41,3 +41,16 @@ default properties is
 |key|value|
 |---|-----|
 |channel|channel_name|
+
+# Warning
+
+if use [﻿APK Signature Scheme v2](https://source.android.com/security/apksigning/v2.html)
+must return old way for sign
+
+```gradle
+android {
+    ﻿signingConfigs{
+        ﻿v2SigningEnabled false
+    }
+}
+```
