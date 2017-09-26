@@ -14,7 +14,7 @@ import (
 const (
 	versionName string = "1.0.0"
 	//TODO set comm info
-	commInfo string = "Android mutil utils"
+	commInfo string = "Android multi utils"
 )
 
 var ExcPathIsNotApk = errors.New("you input path is not apk, please check!")
@@ -81,16 +81,16 @@ func main() {
 				fmt.Printf("insert error %v\n", err)
 				os.Exit(1)
 			}
-			ctx.String("insert channel info into APK success!" +
-				"\n\tChannel: %v" +
-				"\n\tResource path: %v" +
+			ctx.String("insert channel info into APK success!"+
+				"\n\tChannel: %v"+
+				"\n\tResource path: %v"+
 				"\n\tOutpath: %v", channelName, resource, outPutPath)
 			os.Exit(0)
 		} else {
-			ctx.String("Your params is error please check" +
-				"\n\tChannel: %v" +
-				"\n\tResource path: %v" +
-				"\n\tOutpath: %v" +
+			ctx.String("Your params is error please check"+
+				"\n\tChannel: %v"+
+				"\n\tResource path: %v"+
+				"\n\tOutpath: %v"+
 				"\nAll this must be has!", argv.Channel, argv.Resource, argv.Output)
 		}
 

@@ -42,7 +42,7 @@ default properties is
 |---|-----|
 |channel|channel_name|
 
-# Warning
+# Warning v1.x
 
 if use [﻿APK Signature Scheme v2](https://source.android.com/security/apksigning/v2.html)
 must return old way for sign
