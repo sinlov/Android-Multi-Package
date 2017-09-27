@@ -18,6 +18,8 @@ go build -o main main.go
 ./main -h
 # test pakcage
 ./main -c test_Channel -r app-debug.apk -o out.apk
+# add properties
+./main -c test_Channel -r app-debug.apk -p test_properties -o out.apk
 ```
 
 you can download apk-to test
