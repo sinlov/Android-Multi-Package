@@ -9,6 +9,7 @@ import (
 	"github.com/gsdocker/gsos/fs"
 	"github.com/klauspost/compress/zip"
 	"io/ioutil"
+	"strings"
 )
 
 const (
@@ -48,6 +49,23 @@ func FileExist(filePath string) bool {
 	return err == nil || os.IsExist(err)
 }
 
+func ReadFileContentAsStringLines(filePath string) ([]string, error) {
+	result := []string{}
+	b, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return result, err
+	}
+	s := string(b)
+	for _, lineStr := range strings.Split(s, "\n") {
+		lineStr = strings.TrimSpace(lineStr)
+		if lineStr == "" {
+			continue
+		}
+		result = append(result, lineStr)
+	}
+	return result, nil
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Warning you input is error pleae use -h to see help")
@@ -77,7 +95,7 @@ func main() {
 			resource = argv.Resource
 			outPutPath = argv.Output
 			if FileExist(outPutPath) {
-				ctx.String("Out path is exist\n-> %v, stop!", outPutPath)
+				ctx.String("Out path is exist\n-> %v\nExit 1!", outPutPath)
 				os.Exit(1)
 			}
 			isApk := false
@@ -100,8 +118,16 @@ func main() {
 		if argv.Properties != "" {
 			propertiesPath = argv.Properties
 			if ! FileExist(propertiesPath) {
-				ctx.String("Properties file path is error")
+				ctx.String("Properties file path is error\n-> %v\nExit 1", propertiesPath)
 				os.Exit(1)
+			}
+			lines, err := ReadFileContentAsStringLines(propertiesPath)
+			if err != nil {
+				ctx.String("Read Properties file error\n-> Path: %v\n-> error: %v\n\nExit 1", propertiesPath, err)
+				os.Exit(1)
+			}
+			for _, line := range lines {
+				properties = fmt.Sprintf("%s\n%s", properties, line)
 			}
 		}
 
