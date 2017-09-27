@@ -23,11 +23,12 @@ var ExcOutPathIsExist = errors.New("you out path is exist, stop program, please 
 
 type filterCLI struct {
 	cli.Helper
-	Version  bool `cli:"version" usage:"version"`
-	Verbose  bool `cli:"verbose" usage:"see Verbose of utils"`
-	Channel  string `cli:"c,channel" usage:"channel name input"`
-	Resource string `cli:"r,resource" usage:"resource apk path"`
-	Output   string `cli:"o,output" usage:"output apk path"`
+	Version    bool `cli:"version" usage:"version"`
+	Verbose    bool `cli:"verbose" usage:"see Verbose of utils"`
+	Channel    string `cli:"c,channel" usage:"channel name input"`
+	Properties string `cli:"p,properties" usage:"channel properties file input"`
+	Resource   string `cli:"r,resource" usage:"resource apk path"`
+	Output     string `cli:"o,output" usage:"output apk path"`
 }
 
 var isPrintVerbose = false
@@ -61,44 +62,65 @@ func main() {
 		if argv.Verbose {
 			isPrintVerbose = true
 		}
+		var channelName string
+		var resource string
+		var outPutPath string
+		var propertiesPath string
+		var properties string
+		var err error
 		if argv.Channel != "" && argv.Resource != "" && argv.Output != "" {
-			channelName := argv.Channel
+			channelName = argv.Channel
 			if channelName == "" {
 				ctx.String("Channel code error")
 				os.Exit(1)
 			}
-			resource := argv.Resource
-			outPutPath := argv.Output
-			isApk, err := isFilePathApk(resource)
+			resource = argv.Resource
+			outPutPath = argv.Output
+			if FileExist(outPutPath) {
+				ctx.String("Out path is exist\n-> %v, stop!", outPutPath)
+				os.Exit(1)
+			}
+			isApk := false
+			isApk, err = isFilePathApk(resource)
 			isApk, err = isFilePathApk(outPutPath)
 			if !isApk || err != nil {
 				ctx.String("Error %v, sys %v\n", ExcPathIsNotApk, err)
 				os.Exit(1)
 			}
-
-			err = insertApkChannelInfo(channelName, resource, outPutPath)
-			if err != nil {
-				fmt.Printf("insert error %v\n", err)
-				os.Exit(1)
-			}
-			ctx.String("insert channel info into APK success!"+
-				"\n\tChannel: %v"+
-				"\n\tResource path: %v"+
-				"\n\tOutpath: %v", channelName, resource, outPutPath)
-			os.Exit(0)
+			properties = fmt.Sprintf("channel = %v", channelName)
+			err = nil
 		} else {
 			ctx.String("Your params is error please check"+
 				"\n\tChannel: %v"+
 				"\n\tResource path: %v"+
-				"\n\tOutpath: %v"+
-				"\nAll this must be has!", argv.Channel, argv.Resource, argv.Output)
+				"\n\tOutPath: %v"+
+				"\n\tProperties: %v"+
+				"\nAll this must be has!", argv.Channel, argv.Resource, argv.Output, argv.Properties)
 		}
+		if argv.Properties != "" {
+			propertiesPath = argv.Properties
+			if ! FileExist(propertiesPath) {
+				ctx.String("Properties file path is error")
+				os.Exit(1)
+			}
+		}
+
+		err = insertApkChannelInfo(channelName, properties, resource, outPutPath)
+		if err != nil {
+			fmt.Printf("insert error %v\n", err)
+			os.Exit(1)
+		}
+		ctx.String("insert channel info into APK success!"+
+			"\n\tChannel: %v"+
+			"\n\tResource path: %v"+
+			"\n\tOutpath: %v", channelName, resource, outPutPath)
+		os.Exit(0)
 
 		return nil
 	})
 }
 
-func insertApkChannelInfo(channel string, resource string, outPath string) error {
+func insertApkChannelInfo(channel string, body string, resource string, outPath string) error {
 	if fs.IsDir(resource) {
 		return ExcPathIsFolder
 	}
@@ -120,7 +142,7 @@ func insertApkChannelInfo(channel string, resource string, outPath string) error
 	var insertFiles = []struct {
 		Name, Body string
 	}{
-		{"META-INF/pl_channel_" + channel, "channel = " + channel},
+		{"META-INF/pl_channel_" + channel, body},
 	}
 
 	for _, file := range reader.File {
