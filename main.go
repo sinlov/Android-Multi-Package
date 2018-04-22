@@ -18,14 +18,14 @@ const (
 	commInfo string = "Android multi utils"
 )
 
-var ExcPathIsNotApk = errors.New("you input path is not apk, please check!")
-var ExcPathIsFolder = errors.New("you input path is folder, please check!")
-var ExcOutPathIsExist = errors.New("you out path is exist, stop program, please check!")
+var ExcPathIsNotApk = errors.New("you input path is not apk, please check")
+var ExcPathIsFolder = errors.New("you input path is folder, please check")
+var ExcOutPathIsExist = errors.New("you out path is exist, stop program, please check")
 
 type filterCLI struct {
 	cli.Helper
-	Version    bool `cli:"version" usage:"version"`
-	Verbose    bool `cli:"verbose" usage:"see Verbose of utils"`
+	Version    bool   `cli:"version" usage:"version"`
+	Verbose    bool   `cli:"verbose" usage:"see Verbose of utils"`
 	Channel    string `cli:"c,channel" usage:"channel name input"`
 	Properties string `cli:"p,properties" usage:"channel properties file input"`
 	Resource   string `cli:"r,resource" usage:"resource apk path"`
