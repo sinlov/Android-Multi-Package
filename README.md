@@ -51,8 +51,13 @@ must return old way for sign
 
 ```gradle
 android {
-    ﻿signingConfigs{
-        ﻿v2SigningEnabled false
+    signingConfigs {
+        debug {
+            v2SigningEnabled false
+        }
+        release {
+            v2SigningEnabled false
+        }
     }
 }
 ```
