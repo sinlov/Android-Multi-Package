@@ -1,0 +1,4 @@
+gserrors
+========
+
+gsdocker errors library
